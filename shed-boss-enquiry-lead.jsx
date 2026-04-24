@@ -151,9 +151,11 @@ const emptyLead = () => ({
 
 async function safeStorageGet(key) {
   try {
-    if (!window.storage) return { ok: false, error: "storage unavailable" };
-    const res = await window.storage.get(key);
-    return { ok: true, value: res ? res.value : null };
+    if (typeof window === "undefined" || !window.localStorage) {
+      return { ok: false, error: "storage unavailable" };
+    }
+    const value = window.localStorage.getItem(key);
+    return { ok: true, value };
   } catch (e) {
     return { ok: false, error: e?.message || "get failed" };
   }
@@ -161,8 +163,10 @@ async function safeStorageGet(key) {
 
 async function safeStorageSet(key, value) {
   try {
-    if (!window.storage) return { ok: false, error: "storage unavailable" };
-    await window.storage.set(key, value);
+    if (typeof window === "undefined" || !window.localStorage) {
+      return { ok: false, error: "storage unavailable" };
+    }
+    window.localStorage.setItem(key, value);
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e?.message || "set failed" };
@@ -171,8 +175,10 @@ async function safeStorageSet(key, value) {
 
 async function safeStorageDelete(key) {
   try {
-    if (!window.storage) return { ok: false, error: "storage unavailable" };
-    await window.storage.delete(key);
+    if (typeof window === "undefined" || !window.localStorage) {
+      return { ok: false, error: "storage unavailable" };
+    }
+    window.localStorage.removeItem(key);
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e?.message || "delete failed" };
